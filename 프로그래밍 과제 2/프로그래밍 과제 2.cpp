@@ -73,9 +73,6 @@ int main() {
 	printf("분할된 파일들을 지웁니다.\n");
 	remove_runs(run_count);
 
-	//if (runName)
-	//	free(runName);
-
 	return 0;
 }
 
@@ -119,33 +116,13 @@ void get_user_input(char** buffer, int* size) {
 	(*buffer)[done_count] = '\0';
 }
 
-char* runName = NULL;
-int runName_len = 0;
-char numStr[30];
+char runName[50];
 const char* get_runFileName(int number) {
 
-	if (runName_len == 0) {
-		runName_len += 50;
-		runName = (char*)malloc_s((runName_len)*sizeof(char));
-	}
-
-	_itoa_s(number, numStr, 10);
-
-	const char* fileName = "run_0.txt";
-	int i, recording_index = 0;
-	for (i = 0; fileName[i] != '\0'; i++) {
-		if (fileName[i] == '0') 
-			for (int j = 0; numStr[j] != '\0'; j++)
-				runName[recording_index++] = numStr[j];
-
-		else
-			runName[recording_index++] = fileName[i];
-	}
-	runName[recording_index] = fileName[i];
+	sprintf_s(runName, 50, "run_%d.txt", number);
 
 	return (const char*)runName;
 }
-//sprintf_s(runName, 50, "run_%d.txt", number);
 
 void make_new_run(double* data, int data_len, int run_number) {
 	
