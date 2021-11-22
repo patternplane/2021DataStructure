@@ -35,24 +35,24 @@ int main() {
 	printf("파일을 분할하여 정렬합니다.\n");
 
 	double M[200];
-	int M_item_count = 0;
+	int M_item_count;
 	int run_count = 0;
-	while (fscanf_s(inputFile, "%lf", &M[M_item_count]) != EOF) {
-		M_item_count++;
-		if (M_item_count == 200) {
-			qsort(M,sizeof(M)/sizeof(M[0]),sizeof(M[0]), compare);
-			make_new_run(M, M_item_count , run_count++);
-
-			if (run_count == INT_MAX) {
-				fprintf(stderr, "파일 분할의 갯수가 너무 많습니다! run_%d.txt파일에서 분할을 중단합니다.\n", run_count);
-				exit(1);
-			}
-			M_item_count = 0;
+	while (true) {
+		M_item_count = 0;
+		while (fscanf_s(inputFile, "%lf", &M[M_item_count]) != EOF) {
+			M_item_count++;
+			if (M_item_count == 200)
+				break;
 		}
-	}
-	if (M_item_count != 0) {
-		qsort(M, M_item_count, sizeof(M[0]), compare);
-		make_new_run(M, M_item_count, run_count++);
+		if (M_item_count == 0)
+			break;
+
+		qsort(M, M_item_count,sizeof(M[0]), compare);
+		make_new_run(M, M_item_count , run_count++);
+		if (run_count == INT_MAX) {
+			fprintf(stderr, "파일 분할의 갯수가 너무 많습니다! run_%d.txt파일에서 분할을 중단합니다.\n", run_count);
+			exit(1);
+		}
 	}
 
 	printf("파일의 분할 정렬이 완료되었습니다.\n");
