@@ -62,7 +62,7 @@ int main() {
 
 	printf("분할된 파일들을 병합합니다.\n");
 
-	merge_runs(200, run_count);
+	merge_runs(51, run_count);
 
 	printf("파일 병합이 완료되었습니다.\n");
 	printf("\n");
@@ -173,7 +173,7 @@ void merge_runs_r(int merge_size, int run_count,int start_number) {
 
 	if (merge_size < run_count) {
 		int merged_count = 0;
-		int new_run_count = run_count/ merge_size;
+		int new_run_count = (run_count)/ merge_size;
 		for (; merged_count < new_run_count; merged_count++) {
 			merge_runs_r(merge_size, merge_size, start_number + merged_count * merge_size);
 		}
@@ -203,38 +203,40 @@ void merge_runs_r(int merge_size, int run_count,int start_number) {
 				fprintf(stderr, "작업중 분할파일이 손실됨.\n");
 				exit(1);
 			}
-			fscanf_s(merging_files[i],"%lf\n", &items[i]);
-
+			fscanf_s(merging_files[i],"%lf", &items[i]);
+			
 			if (i % 2) {
 				selectTree_looser[(run_start_pos + i) / 2] = ((items[i-1] >= items[i]) ? (i-1) : i );
-				winners[i/2] = ((items[i - 1] < items[i]) ? (i - 1) : i);
+				winners[(i)/2] = ((items[i - 1] < items[i]) ? (i - 1) : i);
 			}
 		}
 		if (i % 2) {
-			selectTree_looser[(run_start_pos + (i - 1)) / 2] = (i - 1);
-			winners[i / 2] = ((items[i - 1] < items[i]) ? (i - 1) : i);
+			selectTree_looser[(run_start_pos + i) / 2] = -1;
+			winners[(i) / 2] = i-1;
 			i++;
 		}
-		for (; i < run_start_pos; i += 2)
+		for (; i < run_start_pos; i += 2) {
 			selectTree_looser[(run_start_pos + i) / 2] = -1;
+			winners[(i) / 2] = -1;
+		}
 
 		int current_start_pos = run_start_pos / 2;
 		int current_number;
 		for (; current_start_pos > 1; current_start_pos /= 2) {
 			for (current_number = 0; current_number < current_start_pos; current_number+=2) {
-				if (selectTree_looser[current_start_pos + current_number + 1] == -1) {
+				if (winners[current_number + 1] == -1) {
 					selectTree_looser[(current_start_pos + current_number) / 2] = -1;
-					winners[current_number / 2] = winners[ current_number];
+					winners[(current_number)/ 2] = winners[ (current_number)];
 				}
 
-				else if (items[winners[current_number]] > items[winners[current_number + 1]]) {
-					selectTree_looser[(current_start_pos + current_number) / 2] = winners[current_number];
-					winners[current_number / 2] = winners[current_number + 1];
+				else if (items[winners[(current_number)]] > items[winners[(current_number + 1)]]) {
+					selectTree_looser[(current_start_pos + current_number) / 2] = winners[(current_number)];
+					winners[(current_number)/ 2] = winners[(current_number) + 1];
 				}
 
 				else {
-					selectTree_looser[(current_start_pos + current_number) / 2] = winners[current_number+1];
-					winners[current_number / 2] = winners[current_number];
+					selectTree_looser[(current_start_pos + current_number) / 2] = winners[(current_number + 1)];
+					winners[(current_number) / 2] = winners[(current_number)];
 				}
 			}
 		}
